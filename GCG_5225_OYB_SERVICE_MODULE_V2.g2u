@@ -1,0 +1,412 @@
+Program.Sub.ScreenSU.Start
+Gui.f_Main..Create
+Gui.f_Main..Caption("The Verdin Company - Service Module")
+Gui.f_Main..Size(20580,10695)
+Gui.f_Main..MinX(0)
+Gui.f_Main..MinY(0)
+Gui.f_Main..Position(0,0)
+Gui.f_Main..BackColor(-2147483633)
+Gui.f_Main..MaxButton(False)
+Gui.f_Main..MousePointer(0)
+Gui.f_Main..Sizeable(False)
+Gui.f_Main..Event(UnLoad,cmdExit_Click)
+Gui.f_Main.lblEquip.Create(Label,"Equipment Notes",True,1935,255,0,120,690,True,0,"Arial",8,-2147483633,0)
+Gui.f_Main.txtEquip.Create(TextboxM)
+Gui.f_Main.txtEquip.Size(6990,1290)
+Gui.f_Main.txtEquip.Position(120,885)
+Gui.f_Main.lblSite.Create(Label,"Site Information",True,1935,255,0,120,2310,True,0,"Arial",8,-2147483633,0)
+Gui.f_Main.txtSite.Create(TextboxM)
+Gui.f_Main.txtSite.Size(6990,1290)
+Gui.f_Main.txtSite.Position(120,2505)
+Gui.f_Main.gcHistory.Create(GsGridControl)
+Gui.f_Main.gcHistory.Size(20130,5700)
+Gui.f_Main.gcHistory.Position(120,4155)
+Gui.f_Main.lblHist.Create(Label,"Service Calls and History",True,1935,255,0,120,3960,True,0,"Arial",8,-2147483633,0)
+Gui.f_Main.cmdSave.Create(Button)
+Gui.f_Main.cmdSave.Size(855,375)
+Gui.f_Main.cmdSave.Position(120,9930)
+Gui.f_Main.cmdSave.Caption("Save")
+Gui.f_Main.cmdSave.Event(Click,cmdSave_Click)
+Gui.f_Main.cmdExit.Create(Button)
+Gui.f_Main.cmdExit.Size(855,375)
+Gui.f_Main.cmdExit.Position(1005,9930)
+Gui.f_Main.cmdExit.Caption("Exit")
+Gui.f_Main.cmdExit.Event(Click,cmdExit_Click)
+Gui.f_Main.cmdSO.Create(Button)
+Gui.f_Main.cmdSO.Size(1575,375)
+Gui.f_Main.cmdSO.Position(18690,9930)
+Gui.f_Main.cmdSO.Caption("New Sales Order")
+Gui.f_Main.cmdSO.Event(Click,cmdSO_Click)
+Gui.f_Main.cmdQuote.Create(Button)
+Gui.f_Main.cmdQuote.Size(1080,375)
+Gui.f_Main.cmdQuote.Position(17580,9930)
+Gui.f_Main.cmdQuote.Caption("New Quote")
+Gui.f_Main.cmdQuote.Event(Click,cmdQuote_Click)
+Gui.f_Main.chkRedFlag.Create(CheckBox)
+Gui.f_Main.chkRedFlag.Size(2085,360)
+Gui.f_Main.chkRedFlag.Position(7320,855)
+Gui.f_Main.chkRedFlag.Caption("Red Flag Customer")
+Gui.f_Main.chkRedFlag.Event(Click,chkRedFlag_Click)
+Gui.f_Main.txtRedFlag.Create(TextboxM)
+Gui.f_Main.txtRedFlag.Size(6990,1215)
+Gui.f_Main.txtRedFlag.Position(7320,1200)
+Gui.f_Main.lblPMAType.Create(Label,"PMA Type",True,1935,255,0,7320,2535,True,0,"Arial",8,-2147483633,0)
+Gui.f_Main.ddlPMAType.Create(DropDownList)
+Gui.f_Main.ddlPMAType.Size(4845,330)
+Gui.f_Main.ddlPMAType.Position(7320,2730)
+Gui.f_Main.lblPMAExp.Create(Label,"PMA Expiration",True,1935,255,0,7320,3180,True,0,"Arial",8,-2147483633,0)
+Gui.f_Main.dtpExp.Create(DatePicker)
+Gui.f_Main.dtpExp.Size(1605,285)
+Gui.f_Main.dtpExp.Position(7320,3375)
+Gui.f_Main.dtpExp.Event(Change,dtpExp_Change)
+Gui.f_Main.chkPMAActive.Create(CheckBox)
+Gui.f_Main.chkPMAActive.Enabled(False)
+Gui.f_Main.chkPMAActive.Size(1560,360)
+Gui.f_Main.chkPMAActive.Position(9045,3345)
+Gui.f_Main.chkPMAActive.Caption("PMA Active")
+Gui.f_Main.lblCustomer.Create(Label,"Customer",True,1935,255,0,120,105,True,0,"Arial",8,-2147483633,0)
+Gui.f_Main.txtCustomer.Create(TextBox,"",True,1245,300,0,120,300,True,0,"Arial",8,-2147483643,1)
+Gui.f_Main.txtCustomer.Event(LostFocus,txtCustomer_KeyPressEnter)
+Gui.f_Main.txtCustomer.Event(KeyPressEnter,txtCustomer_KeyPressEnter)
+Gui.f_Main.txtName.Create(TextBox,"",True,3000,300,0,1395,300,True,0,"Arial",8,-2147483643,1)
+Gui.f_Main.txtName.Locked(True)
+Gui.f_Main.cmdBrwCust.Create(Button)
+Gui.f_Main.cmdBrwCust.Size(375,330)
+Gui.f_Main.cmdBrwCust.Position(4455,285)
+Gui.f_Main.cmdBrwCust.Caption("^")
+Gui.f_Main.cmdBrwCust.Event(Click,cmdBrwCust_Click)
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+'BN, Sept 10, 2018
+'Customer: Verdin
+'This project 5225 is a modification of an existing GAB to work with CRM for GSS 2017.2
+'Attached to script 7 button
+V.Local.sIcon.Declare(String)
+V.Local.sSQL.Declare(String)
+
+Function.Intrinsic.String.Build("{0}\OYBI-ICON.ico", V.Caller.GasDir,v.Local.sIcon)
+Gui.f_Main..Icon(V.Local.sIcon)
+
+Function.Intrinsic.Control.SelectCase(V.Caller.Hook)
+Function.Intrinsic.Control.Case(51087)
+	Function.ODBC.Connection!Conx.OpenCompanyConnection(300)
+	gui.f_Main.txtCustomer.Text(V.Passed.Data-CRM-COMPID)
+	Function.Intrinsic.String.Build("SELECT NAME_CUSTOMER FROM V_CUSTOMER_MASTER WHERE CUSTOMER = '{0}'", v.Screen.f_Main!txtCustomer.Text, V.Local.sSQL)
+	Function.ODBC.Connection!Conx.ExecuteAndReturn(V.Local.sSQL, V.Local.sSQL)
+	gui.f_Main.txtName.Text(v.Local.sSQL)
+	
+	Function.Intrinsic.Control.CallSub(LoadData)
+Function.Intrinsic.Control.Case(51011)
+
+'	V.Passed.CRM-cmdGAB-0.Set("Service Module")		
+	Function.ODBC.Connection!Conx.OpenCompanyConnection(300)
+	Function.Intrinsic.String.Build("SELECT RED_FLAG FROM OYB_VER_SERVICE_INFO WHERE COMPID = '{0}' AND COMPTYPE = 15 AND RED_FLAG = 1",V.Passed.DATA-CRM-COMPID,V.Local.sSQL)
+	Function.ODBC.Connection!conx.ExecuteAndReturn(V.Local.sSQL, V.Local.sSQL)
+	
+	Function.Intrinsic.Control.If(V.Local.sSQL,<>,"")
+		Function.Intrinsic.UI.Msgbox("You have selected a Red Flag Customer","Red Flag Customer")
+	Function.Intrinsic.Control.EndIf
+	
+Function.Intrinsic.Control.CaseElse
+	Function.ODBC.Connection!Conx.OpenCompanyConnection(300)	
+	gui.f_Main..Show
+Function.Intrinsic.Control.EndSelect
+Program.Sub.Main.End
+
+Program.Sub.cmdSave_Click.Start
+V.Local.iC.Declare(Long)
+V.Local.sSQL.Declare(String)
+V.Local.bRet.Declare(Boolean,False)
+V.Local.sPartSplit.Declare(String)
+V.Local.sID.Declare(String)
+V.Local.sDate.Declare(String)
+
+Function.Intrinsic.Control.For(v.Local.iC,0,V.DataTable.MAIN.RowCount--,1)
+	Function.Intrinsic.Control.If(v.DataTable.MAIN(V.Local.iC).DATE_CLOSED!FieldValPervasiveDate,=,"1900-01-01")
+	Function.Intrinsic.Control.AndIf(V.DataTable.MAIN(V.Local.iC).TYPE!FieldValTrim,=,"PMA")
+		V.Local.bRet.Set(True)
+
+	Function.Intrinsic.Control.EndIf
+Function.Intrinsic.Control.Next(V.Local.iC)
+
+Function.Intrinsic.Control.If(v.Local.bRet,=,True)
+Function.Intrinsic.Control.AndIf(v.Screen.f_Main!ddlPMAType.text,=,"")
+	Function.Intrinsic.UI.Msgbox("You must select a valid PMA Type, when at least one PMA is open.","Open PMAs Exist")
+	Function.Intrinsic.Control.ExitSub
+Function.Intrinsic.Control.EndIf
+
+Function.Intrinsic.Control.If(v.Local.bRet,=,True)
+Function.Intrinsic.Control.AndIf(v.Screen.f_Main!dtpExp.value,<,V.Ambient.Date)
+	Function.Intrinsic.UI.Msgbox("You must select a valid PMA Expiration Date, when at least one PMA is open.","Open PMAs Exist")
+	Function.Intrinsic.Control.ExitSub
+Function.Intrinsic.Control.EndIf
+
+Function.Intrinsic.String.Build("SELECT * FROM OYB_VER_SERVICE_INFO WHERE COMPTYPE = 15 AND COMPID = '{0}'",V.Screen.f_Main!txtCustomer.text,V.Local.sSQL)
+Function.ODBC.Connection!conx.OpenLocalRecordSEtRW("rst",V.Local.sSQL)
+Function.Intrinsic.Control.If(v.ODBC.conx!rst.EOF,=,True)
+	Function.ODBC.Conx!rst.AddNew
+	Function.ODBC.conx!rst.Set!COMPTYPE(15)
+	Function.ODBC.conx!rst.Set!COMPID(V.Screen.f_Main!txtCustomer.text)
+Function.Intrinsic.Control.EndIf
+
+Function.ODBC.Conx!rst.Set!EQUIP_LIST(v.Screen.f_Main!txtEquip.text)
+Function.ODBC.Conx!rst.Set!SITE_INFO(v.Screen.f_Main!txtSite.text)
+Function.ODBC.Conx!rst.Set!RED_FLAG_REASON(v.Screen.f_Main!txtRedFlag.text)
+Function.ODBC.Conx!rst.Set!RED_FLAG(v.Screen.f_Main!chkRedFlag.Value)
+Function.ODBC.conx!rst.Update
+Function.ODBC.conx!rst.Close
+
+Function.Intrinsic.String.Build("SELECT * FROM CRM_UF_VALUE WHERE COMPID = '{0}' AND COMPTYPE = 15 AND TYPE = 15",V.Screen.f_Main!txtcustomer.text,	V.Local.sSQL)
+Function.ODBC.Connection!conx.OpenLocalRecordSEtRW("rst",V.Local.sSQL)
+Function.Intrinsic.Control.If(v.ODBC.conx!rst.EOF,=,True)
+	Function.ODBC.Connection!conx.GetID("CRM_UF_VALUE","UID",True,V.Local.sID)
+	Function.ODBC.Conx!rst.AddNew	
+	Function.ODBC.conx!rst.Set!UID(V.Local.sID)
+	Function.ODBC.conx!rst.Set!COMPTYPE(15)
+	Function.ODBC.conx!rst.Set!COMPID(V.Screen.f_Main!txtcustomer.text)
+Function.Intrinsic.Control.EndIf
+
+Function.ODBC.conx!rst.Set!UF5(V.Screen.f_Main!ddlPMAType.Text)
+Function.Intrinsic.String.Format(V.Screen.f_Main!dtpExp.Value, "MM/DD/YYYY",V.Local.sDate)
+Function.ODBC.conx!rst.Set!UF9(V.Local.sDate)
+Function.ODBC.Conx!rst.Update
+Function.ODBC.conx!rst.Close
+Function.Intrinsic.Control.If(v.Caller.Hook,=,42918)
+	Function.Intrinsic.Control.CallSub(cmdExit_click)
+Function.Intrinsic.Control.Else
+	Function.Intrinsic.Control.CallSub(ClearScreen)
+Function.Intrinsic.Control.EndIf
+	
+Program.Sub.cmdSave_Click.End
+
+Program.Sub.cmdExit_Click.Start
+Function.ODBC.Connection!conx.Close
+Function.Intrinsic.Control.End
+Program.Sub.cmdExit_Click.End
+
+Program.Sub.cmdQuote_Click.Start
+V.Local.sRet.Declare(String)
+
+Function.Intrinsic.String.Build("!*!{0}",V.Screen.f_Main!txtCustomer.text,v.Local.sRet)
+Function.Global.General.CallWrapperAsync(251001, V.Local.sRet)
+Program.Sub.cmdQuote_Click.End
+
+Program.Sub.cmdSO_Click.Start
+V.Local.sRet.Declare(String)
+
+Function.Intrinsic.String.Build("!*!N!*!{0}",V.Screen.f_Main!txtCustomer.text, V.Local.sRet)
+Function.Global.General.CallWrapperAsync(200000, V.Local.sRet)
+Program.Sub.cmdSO_Click.End
+
+Program.Sub.LoadData.Start
+V.Local.sSQL.Declare(String)
+V.Local.bRet.Declare(Boolean)
+V.Local.dDate.Declare(Date)
+V.Local.sCols.Declare(String)
+V.Local.sProps.Declare(String)
+V.Local.iC.Declare(Long)
+V.Local.sPartSplit.Declare(String)
+v.Local.iMinus.Declare(LOng)
+
+Function.Intrinsic.String.Build("SELECT NAME_CUSTOMER FROM V_CUSTOMER_MASTER WHERE CUSTOMER = '{0}'", V.Screen.f_Main!txtCustomer.text, V.Local.Ssql)
+Function.ODBC.Connection!Conx.ExecuteAndReturn(V.Local.sSQL,V.Local.sSQL)
+Function.Intrinsic.String.Build("The Verdin Company - Service Module - {0} - {1}",V.Screen.f_Main!txtcustomer.text,v.Local.sSQL,v.Local.sSQL)
+gui.f_Main..Caption(V.Local.sSQL)
+
+'Function.Intrinsic.String.Build("SELECT DISTINCT UF_VALUE FROM CRM_UF_DEFAULT WHERE TYPE = 15 AND UF_NO = 5 ORDER BY UFSID", V.Global.sCompType,V.Local.sSQL)
+Function.ODBC.Connection!Conx.OpenLocalRecordSetRO("rst","SELECT DISTINCT UF_VALUE FROM CRM_UF_DEFAULT WHERE TYPE = 15 AND UF_NO = 5 ORDER BY UFSID")
+Function.Intrinsic.Control.DoUntil(v.ODBC.conx!rst.EOF,=,True)
+	gui.f_Main.ddlPMAType.AddItem(V.ODBC.conx!rst.FieldValTrim!UF_VALUE)
+	Function.ODBC.conx!rst.MoveNext
+Function.Intrinsic.Control.Loop
+Function.ODBC.conx!rst.Close
+
+Function.Intrinsic.String.Build("SELECT * FROM OYB_VER_SERVICE_INFO WHERE COMPTYPE = 15 AND COMPID = '{0}'", v.Screen.f_Main!txtCustomer.text,V.Local.sSQL)
+Function.ODBC.Connection!conx.OpenLocalRecordSetRW("rst",V.Local.sSQL)
+Function.Intrinsic.Control.If(V.ODBC.conx!rst.EOF,=,False)
+	gui.f_Main.txtEquip.Text(V.ODBC.conx!rst.FieldValTrim!EQUIP_LIST)
+	gui.f_Main.txtSite.Text(V.ODBC.conx!rst.FieldValTrim!SITE_INFO)
+	Function.Intrinsic.Control.If(v.ODBC.conx!rst.FieldVal!RED_FLAG,=,True)
+		gui.f_Main.chkRedFlag.Value(v.ODBC.conx!rst.FieldVal!RED_FLAG)
+		gui.f_Main.txtRedFlag.Text(V.ODBC.conx!rst.FieldValTrim!RED_FLAG_REASON)
+		gui.f_Main.txtRedFlag.Enabled(True)
+	Function.Intrinsic.Control.Else
+		gui.f_Main.chkRedFlag.Value(0)
+		gui.f_Main.txtRedFlag.Enabled(False)
+	Function.Intrinsic.Control.EndIf
+Function.Intrinsic.Control.Else
+	gui.f_Main.txtRedFlag.Enabled(False)
+Function.Intrinsic.Control.EndIf
+Function.ODBC.conx!rst.Close
+
+Function.Intrinsic.String.Build("SELECT UF5, UF9 FROM CRM_UF_VALUE WHERE COMPTYPE = 15 AND COMPID = '{0}'", V.Screen.f_Main!txtCustomer.text,V.Local.sSQL)
+Function.ODBC.Connection!conx.OpenLocalRecordSetRO("rst",V.Local.sSQL)
+Function.Intrinsic.Control.If(V.ODBC.conx!rst.EOF,=,False)
+	Function.Intrinsic.Date.IsDate(V.ODBC.conx!rst.FieldVal!UF9,V.Local.bRet)
+	Function.Intrinsic.Control.If(V.Local.bRet,=,True)
+		V.Local.dDate.Set(V.ODBC.conx!rst.FieldVal!UF9)
+		Function.Intrinsic.Control.If(V.Local.dDate,>,V.Ambient.Date)
+			gui.f_Main.chkPMAActive.Value(1)
+			gui.f_Main.dtpExp.Value(V.ODBC.conx!rst.FieldVal!UF9)
+		Function.Intrinsic.Control.Else
+			gui.f_Main.chkPMAActive.Value(0)
+			gui.f_Main.dtpExp.Value(V.ODBC.conx!rst.FieldVal!UF9)
+		Function.Intrinsic.Control.EndIf
+	Function.Intrinsic.Control.Else	
+		gui.f_Main.chkPMAActive.Value(0)
+		gui.f_Main.dtpExp.Value("01/01/1900")
+	Function.Intrinsic.Control.EndIf
+	
+	Function.Intrinsic.Control.If(V.ODBC.conx!rst.FieldValTrim!UF5,<>,"")
+		gui.f_Main.ddlPMAType.Text(v.ODBC.conx!rst.FieldValTrim!UF5)
+	Function.Intrinsic.Control.EndIf
+Function.Intrinsic.Control.EndIf
+Function.ODBC.conx!rst.Close
+
+
+Function.Intrinsic.Control.If(v.DataTable.MAIN.Exists,=,True)
+	Function.Data.DataTable.Close("MAIN")
+Function.Intrinsic.Control.EndIf
+
+Function.Intrinsic.String.Build("SELECT A.JOB + IF(A.SUFFIX<>'','-' + A.SUFFIX,'') AS WO, A.PART, IF(A.DATE_DUE='1900-01-01',NULL,A.DATE_DUE) AS DATE_DUE,IF(A.DATE_CLOSED='1900-01-01',NULL,A.DATE_CLOSED) AS DATE_CLOSED, B.NOTES, IF(B.DATE_LAST_MOD='1900-01-01',NULL,B.DATE_LAST_MOD) AS DATE_LAST_MOD, B.USER_LAST_MOD FROM V_JOB_HEADER AS A LEFT JOIN OYB_WO_COMMENTS AS B ON A.JOB = B.JOB AND A.SUFFIX = B.SUFFIX WHERE LEFT(A.PART,1) = 'Z' AND A.CUSTOMER = '{0}' ORDER BY A.DATE_CLOSED ASC, A.JOB ASC, A.SUFFIX ASC",V.Screen.f_Main!txtCustomer.text,V.Local.sSQL)
+
+Function.Data.DataTable.CreateFromSQL("MAIN","conx",V.Local.sSQL,True)
+Function.Data.DataTable.AddColumn("MAIN","TECH","String")
+
+Function.Intrinsic.Control.For(V.Local.iC,0,V.Datatable.MAIN.RowCount--,1)
+	Function.Intrinsic.String.Build("SELECT TOP 1 DESCRIPTION FROM V_JOB_OPERATIONS WHERE JOB + IF(SUFFIX<>'','-' + SUFFIX,'') ='{0}' AND LMO = 'L' ORDER BY SEQ ASC",V.DataTable.MAIN(V.Local.iC).WO!FieldValTrim,V.Local.sSQL)
+	Function.ODBC.Connection!conx.ExecuteAndReturn(V.Local.sSQL,V.Local.sSQL)
+	Function.Data.DataTable.SetValue("MAIN",V.Local.iC,"TECH",V.Local.sSQL)	
+
+Function.Intrinsic.Control.Next(V.Local.iC)
+
+gui.f_Main.gcHistory.AddGridviewFromDatatable("gvRecords","MAIN")
+gui.f_Main.gcHistory.SetGridviewProperty("gvRecords","ReadOnly",True)
+gui.f_Main.gcHistory.SetGridviewProperty("gvRecords","Editable",False)
+gui.f_Main.gcHistory.SetGridviewProperty("gvRecords","ColumnPanelRowHeight",40)
+
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","WO","Caption","Work Order")
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","PART","Caption","Part")
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","DATE_DUE","Caption","Due Date")
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","DATE_CLOSED","Caption","Date Completed")
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","NOTES","Caption","Comments")
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","DATE_LAST_MOD","Caption","Date Change Last")
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","USER_LAST_MOD","Caption","Last Change User")
+'gui.f_Main.gcHistory.SetColumnProperty("gvRecords","TYPE","Caption","PMA or Service")
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","TECH","Caption","Service Tech")
+
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","WO","MinWidth",75)
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","PART","MinWidth",160)
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","DATE_DUE","MinWidth",75)
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","DATE_CLOSED","MinWidth",75)
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","NOTES","MinWidth",400)
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","DATE_LAST_MOD","MinWidth",75)
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","USER_LAST_MOD","MinWidth",75)
+'gui.f_Main.gcHistory.SetColumnProperty("gvRecords","TYPE","MinWidth",75)
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","TECH","MinWidth",160)
+
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","WO","HeaderFontBold",True)
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","PART","HeaderFontBold",True)
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","DATE_DUE","HeaderFontBold",True)
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","DATE_CLOSED","HeaderFontBold",True)
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","NOTES","HeaderFontBold",True)
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","DATE_LAST_MOD","HeaderFontBold",True)
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","USER_LAST_MOD","HeaderFontBold",True)
+'gui.f_Main.gcHistory.SetColumnProperty("gvRecords","TYPE","HeaderFontBold",True)
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","TECH","HeaderFontBold",True)
+
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","WO","HeaderWordWrap","wrap")
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","PART","HeaderWordWrap","wrap")
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","DATE_DUE","HeaderWordWrap","wrap")
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","DATE_CLOSED","HeaderWordWrap","wrap")
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","NOTES","HeaderWordWrap","wrap")
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","DATE_LAST_MOD","HeaderWordWrap","wrap")
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","USER_LAST_MOD","HeaderWordWrap","wrap")
+'gui.f_Main.gcHistory.SetColumnProperty("gvRecords","TYPE","HeaderWordWrap","wrap")
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","TECH","HeaderWordWrap","wrap")
+
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","WO","VisibleIndex",0)
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","PART","VisibleIndex",1)
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","DATE_DUE","VisibleIndex",2)
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","DATE_CLOSED","VisibleIndex",3)
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","TECH","VisibleIndex",4)
+'gui.f_Main.gcHistory.SetColumnProperty("gvRecords","TYPE","VisibleIndex",5)
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","NOTES","VisibleIndex",5)
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","DATE_LAST_MOD","VisibleIndex",6)
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","USER_LAST_MOD","VisibleIndex",7)
+
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","DATE_LAST_MOD","DisplayCustomDateTime","d")
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","DATE_DUE","DisplayCustomDateTime","d")
+gui.f_Main.gcHistory.SetColumnProperty("gvRecords","DATE_CLOSED","DisplayCustomDateTime","d")
+gui.f_Main.gcHistory.MainView("gvRecords")
+gui.f_Main..Show
+Program.Sub.LoadData.End
+
+Program.Sub.chkRedFlag_Click.Start
+Function.Intrinsic.Control.If(v.Screen.f_Main!chkRedFlag.Value,=,1)
+	gui.f_Main.txtRedFlag.Enabled(True)
+Function.Intrinsic.Control.Else
+	gui.f_Main.txtRedFlag.Text("")
+	gui.f_Main.txtRedFlag.Enabled(False)
+Function.Intrinsic.Control.EndIf
+Program.Sub.chkRedFlag_Click.End
+
+Program.Sub.dtpExp_Change.Start
+Function.Intrinsic.Control.If(V.Screen.f_Main!dtpExp.Value,>,V.Ambient.Date)
+	gui.f_Main.chkPMAActive.Value(1)
+Function.Intrinsic.Control.Else
+	gui.f_Main.chkPMAActive.Value(0)
+Function.Intrinsic.Control.EndIf
+Program.Sub.dtpExp_Change.End
+
+Program.Sub.cmdBrwCust_Click.Start
+V.Local.sRet.Declare(String)
+
+Function.Intrinsic.UI.CommonBrowser(205, "", V.Local.sRet)
+Function.Intrinsic.Control.If(v.Local.sRet,<>,"***CANCEL***")
+	Function.Intrinsic.String.Split(v.Local.sRet, "*!*", V.Local.sRet)
+	gui.f_Main.txtCustomer.Text(v.Local.sRet(0).Trim)
+	gui.f_Main.txtName.Text(v.Local.sRet(1).Trim)
+	Function.Intrinsic.Control.CallSub(LoadData)
+Function.Intrinsic.Control.EndIf	
+Program.Sub.cmdBrwCust_Click.End
+
+Program.Sub.txtCustomer_KeyPressEnter.Start
+V.Local.sSQL.Declare(String)
+
+Function.Intrinsic.Control.If(V.Screen.f_Main!txtCustomer.Text,=,"")
+	gui.f_Main.txtName.Text("")
+	Function.Intrinsic.Control.CallSub(ClearScreen)
+Function.Intrinsic.Control.Else
+	Function.Intrinsic.String.Build("SELECT NAME_CUSTOMER FROM V_CUSTOMER_MASTER WHERE CUSTOMER = '{0}'", v.Screen.f_Main!txtCustomer.Text, V.Local.sSQL)
+	Function.ODBC.Connection!Conx.ExecuteAndReturn(V.Local.sSQL, V.Local.sSQL)
+	Function.Intrinsic.Control.If(V.Ambient.ExecuteAndReturnEOF,=,True)
+		Function.Intrinsic.Control.CallSub(ClearScreen)
+		Function.Intrinsic.UI.Msgbox("Invalid Customer Entered", "Invalid Customer")
+	Function.Intrinsic.Control.Else
+		GUI.f_Main.txtName.Text(V.Local.sSQL)
+		Function.Intrinsic.Control.CallSub(LoadData)
+	Function.Intrinsic.Control.EndIf
+Function.Intrinsic.Control.EndIf
+
+Program.Sub.txtCustomer_KeyPressEnter.End
+
+Program.Sub.ClearScreen.Start
+gui.f_Main.dtpExp.Value("01/01/1900")
+gui.f_Main.chkPMAActive.Value(0)
+gui.f_Main.chkRedFlag.Value(0)
+gui.f_Main.ddlPMAType.Text("")
+Function.Intrinsic.Control.If(V.DataTable.MAIN.Exists,=,True)
+	Function.Data.DataTable.Close("MAIN")
+	gui.f_Main.gcHistory.ClearRows("gvRecords")
+Function.Intrinsic.Control.EndIf
+gui.f_Main.txtCustomer.Text("")
+gui.f_Main.txtEquip.Text("")
+gui.f_Main.txtName.Text("")
+gui.f_Main.txtRedFlag.Text("")
+gui.f_Main.txtSite.Text("")
+Program.Sub.ClearScreen.End
