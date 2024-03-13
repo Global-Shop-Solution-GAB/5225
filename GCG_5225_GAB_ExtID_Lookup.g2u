@@ -1,0 +1,64 @@
+Program.Sub.ScreenSU.Start
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+'BN, Sept 10, 2018
+'Customer: Verdin
+'This project 5225 is a modification of an existing GAB to work with CRM for GSS 2017.2
+'Attached to script 6 button
+
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+V.Local.sCustid.Declare(String)
+V.Local.sSql.Declare(String)
+V.Local.sReturn.Declare(String)
+V.Local.sTitles.Declare(String)
+V.Local.iWidths.Declare(Long)
+V.Local.sCust.Declare(String)
+
+V.Local.sSql.Set("select CFI.EXTERNAL_ID, CFI.CUSTOMER, CM.NAME_CUSTOMER  ")
+F.Intrinsic.String.Concat(V.Local.sSql,"from CUST_FORM_INFO CFI left join V_CUSTOMER_MASTER CM on CM.CUSTOMER = CFI.CUSTOMER ",V.Local.sSql)
+F.Intrinsic.String.Concat(V.Local.sSql,"where CFI.EXTERNAL_ID <> '' AND CFI.REC = '6'",V.Local.sSql)
+
+F.ODBC.Connection!conx.OpenConnection(V.Ambient.PDSN,V.Ambient.PUser,V.Ambient.PPass)
+F.Intrinsic.String.Split("EXTERNAL_ID*!*CUSTOMER*!*NAME_CUSTOMER","*!*",V.Local.sTitles)
+F.Intrinsic.String.Split("1800*!*800*!*2800","*!*",V.Local.iWidths)
+Function.Intrinsic.UI.SetBrowserHotTypeAhead(True)
+F.Intrinsic.UI.Browser("Select External_ID",conx,V.Local.sSql,V.Local.sTitles,V.Local.iWidths,V.Local.sReturn)
+F.ODBC.Connection!conx.Close
+
+F.Intrinsic.Control.If(V.Local.sReturn,"=","***CANCEL***")
+	F.Intrinsic.UI.Msgbox("No ID was selected")
+F.Intrinsic.Control.Else
+	F.Intrinsic.String.Split(V.Local.sReturn,"*!*",V.Local.sReturn)
+	F.Intrinsic.String.Trim(V.Local.sReturn(1),V.Local.sCust)	
+	'Version 2016.2
+	'V.Passed.CRM-txtLookup.set(V.Local.sCust)
+	
+	'Version 2017.1:
+	Variable.Passed.CRM-teFind.Set(V.Local.sCust)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GAB_ExtID_Lookup.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+Function.Intrinsic.Control.EndIf
+
+
+
+Program.Sub.Main.End
+
+Program.Sub.Comments.Start
+${$0$}$GAB_ExtID_Lookup$}$DFINCH$}$6/19/2015
+${$3$}$0$}$$}$-1$}$-1$}$$}$1/1/1900$}$This project provides a simple browser that will allow the user to search for customers using the exteral ID from the customer master options screen.  It returns the customer number to the search box.
+Program.Sub.Comments.End
+
